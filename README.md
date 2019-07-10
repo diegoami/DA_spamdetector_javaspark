@@ -20,6 +20,7 @@ mvn clean compile package
 cp target/bootstrap-executable-1.0-SNAPSHOT.jar .
 ```
 
+Note that this will not work out of the box in Windows
 
 ## RUN locally
 
