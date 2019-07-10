@@ -36,6 +36,7 @@ public class CreateModel {
                 .builder()
                 .appName("Java Spark SQL Example")
                 .config("spark.master", "local")
+                .config("spark.testing.memory", "2147480000")
                 .getOrCreate();
 
         JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());

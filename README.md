@@ -17,7 +17,7 @@ Execute
 
 ```
 mvn clean compile package
-cp target/bootstrap-executable-1.0-SNAPSHOT.jar .
+split target/bootstrap-executable-1.0-SNAPSHOT.jar -b 40M BOT
 ```
 
 Note that this will not work out of the box in Windows
