@@ -13,8 +13,13 @@ The related project in Pyspark is here: http://github.com/diegoami/DA_spamdetect
 Make sure you have Java 8 or higher installed and Maven
 
 ## COMPILE
+Execute
 
-Execute `mvn clean compile package`
+```
+mvn clean compile package
+cp target/bootstrap-executable-1.0-SNAPSHOT.jar .
+```
+
 
 ## RUN locally
 

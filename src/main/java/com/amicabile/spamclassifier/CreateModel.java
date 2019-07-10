@@ -14,16 +14,11 @@ import org.apache.spark.mllib.evaluation.MulticlassMetrics;
 import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.Metadata;
-import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.apache.spark.sql.functions.col;
 
@@ -78,12 +73,6 @@ public class CreateModel {
         Dataset<Row> testPredictions = model.transform(testDf).withColumn("label", testDf.col("label").cast(DataTypes.DoubleType));
 
         Dataset<Row> predictions = model.transform(df).withColumn("label", df.col("label").cast(DataTypes.DoubleType));
-
-        //for (Row r : predictions.select( "message", "probability", "prediction").collectAsList()) {
-        //    System.out.println("(" + r.get(0)  + ") --> prob=" + r.get(1)
-        //            + ", prediction=" + r.get(2));
-        //}
-
 
         BinaryClassificationMetrics testMetrics =
                 new BinaryClassificationMetrics(testPredictions.select(col("prediction"), col("label")));
