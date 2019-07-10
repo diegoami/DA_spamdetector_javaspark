@@ -21,6 +21,7 @@ import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +31,11 @@ import static org.apache.spark.sql.functions.col;
 public class CreateModel {
 
     public static void main(String[] args) {
+
+        File directory = new File("data");
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
 
         SparkSession spark = SparkSession
                 .builder()
@@ -61,7 +67,7 @@ public class CreateModel {
         //CountVectorizer countVectorizer = new CountVectorizer().setInputCol(tokenizer.getOutputCol()).setOutputCol("features");
         HashingTF hashingTF = new HashingTF()
                 .setNumFeatures(3000)
-               .setInputCol(tokenizer.getOutputCol())
+                .setInputCol(tokenizer.getOutputCol())
                 .setOutputCol("features");
         LogisticRegression lr = new LogisticRegression()
                 .setMaxIter(100).setRegParam(0.001);
@@ -94,8 +100,7 @@ public class CreateModel {
         Matrix confusion = metrics.confusionMatrix();
         System.out.println("Confusion matrix: \n" + confusion);
         try {
-            pipeline.write().overwrite().save("pipeline");
-            model.write().overwrite().save("model");
+            model.write().overwrite().save("data/sparkmodel");
         } catch (java.io.IOException ioe) {
             System.out.format("Cannot save model to pipeline.model: %s\n", ioe.getMessage());
         }

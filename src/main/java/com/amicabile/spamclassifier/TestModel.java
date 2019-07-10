@@ -38,7 +38,7 @@ public class TestModel {
         jsc.setLogLevel("WARN");
 
 
-        PipelineModel loadedModel = PipelineModel.load("model");
+        PipelineModel loadedModel = PipelineModel.load("data/sparkmodel");
         List<Row> rowList = Arrays.asList(
                 RowFactory.create("Winner! You have won a car"),
                 RowFactory.create("I feel bad today"),

@@ -1,0 +1,1 @@
+java -cp target/bootstrap-executable-1.0-SNAPSHOT.jar com.amicabile.spamclassifier.TestModel
