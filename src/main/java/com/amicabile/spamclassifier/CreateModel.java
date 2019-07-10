@@ -27,7 +27,7 @@ import java.util.List;
 import static org.apache.spark.sql.functions.col;
 
 
-public class Main {
+public class CreateModel {
 
     public static void main(String[] args) {
 
@@ -100,23 +100,6 @@ public class Main {
             System.out.format("Cannot save model to pipeline.model: %s\n", ioe.getMessage());
         }
 
-        PipelineModel loadedModel = PipelineModel.load("model");
-        List<Row> rowList = Arrays.asList(
-                RowFactory.create("Winner! You have won a car"),
-                RowFactory.create("I feel bad today"),
-                RowFactory.create("Please call our customer service representative"),
-                RowFactory.create("Your free ringtone is waiting to be collected. Simply text the password")
-        );
 
-        StructType schemaPred = new StructType()
-                .add("message", "string");
-
-        Dataset<Row> rowDf = spark.createDataFrame(rowList, schemaPred);
-        Dataset<Row> predictionsLoaded = loadedModel.transform(rowDf);
-        System.out.println(predictionsLoaded);
-        for (Row r : predictionsLoaded.select( "message", "probability", "prediction").collectAsList()) {
-            System.out.println("(" + r.get(0)  + ") --> prob=" + r.get(1)
-                    + ", prediction=" + r.get(2));
-        }
     }
 }
