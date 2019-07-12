@@ -4,10 +4,14 @@ package com.amicabile.spamclassifier;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.ml.PipelineModel;
 
+import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
+import org.apache.spark.mllib.evaluation.MulticlassMetrics;
+import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
 
 import java.util.Arrays;
@@ -32,6 +36,34 @@ public class TestModel {
 
 
         PipelineModel loadedModel = PipelineModel.load("data/sparkmodel");
+
+        StructType schema = new StructType()
+                .add("message", "string")
+                .add("label", "int");
+        Dataset<Row> df = spark.read()
+                .option("mode", "DROPMALFORMED")
+                .schema(schema)
+                .csv("spam_out.csv");
+
+        Dataset<Row> predictions = loadedModel.transform(df).withColumn("label", df.col("label").cast(DataTypes.DoubleType));
+
+        Dataset<Row> predictionsRDD = predictions.select(col("prediction"), col("label"));
+        BinaryClassificationMetrics binaryMetrics =
+                new BinaryClassificationMetrics(predictionsRDD);
+
+        System.out.format("Overall PR and ROC : %f, %f\n", binaryMetrics.areaUnderPR(), binaryMetrics.areaUnderROC());
+
+        MulticlassMetrics multiclassMetrics
+                = new MulticlassMetrics(predictions.select("prediction", "label"));
+
+// Confusion matrix
+
+        System.out.println("Confusion Matrix");
+        System.out.println(multiclassMetrics.confusionMatrix());
+        System.out.format("Precision: %f, %f\n",multiclassMetrics.precision(1), multiclassMetrics.precision(0));
+        System.out.format("Recall: %f, %f\n",multiclassMetrics.recall(1), multiclassMetrics.recall(0));
+
+
         List<Row> rowList = Arrays.asList(
                 RowFactory.create("Winner! You have won a car"),
                 RowFactory.create("I feel bad today"),

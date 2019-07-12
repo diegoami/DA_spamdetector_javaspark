@@ -71,30 +71,38 @@ public class CreateModel {
                 .setStages(new PipelineStage[] {tokenizer, hashingTF, lr});
         PipelineModel model = pipeline.fit(trainingDf);
 
-        Dataset<Row> testPredictions = model.transform(testDf).withColumn("label", testDf.col("label").cast(DataTypes.DoubleType));
 
-        Dataset<Row> predictions = model.transform(df).withColumn("label", df.col("label").cast(DataTypes.DoubleType));
-
-        BinaryClassificationMetrics testMetrics =
-                new BinaryClassificationMetrics(testPredictions.select(col("prediction"), col("label")));
-
-        System.out.format("Test PR and ROC : %f, %f\n", testMetrics.areaUnderPR(), testMetrics.areaUnderROC()) ;
-        BinaryClassificationMetrics overallMetrics =
-                new BinaryClassificationMetrics(predictions.select(col("prediction"), col("label")));
-
-        System.out.format("Overall PR and ROC : %f, %f\n", overallMetrics.areaUnderPR(), overallMetrics .areaUnderROC());
-
-        MulticlassMetrics metrics = new MulticlassMetrics(predictions.select("prediction", "label"));
-
-// Confusion matrix
-        Matrix confusion = metrics.confusionMatrix();
-        System.out.println("Confusion matrix: \n" + confusion);
         try {
             model.write().overwrite().save("data/sparkmodel");
         } catch (java.io.IOException ioe) {
             System.out.format("Cannot save model to pipeline.model: %s\n", ioe.getMessage());
         }
 
+        Dataset<Row> testPredictions = model.transform(testDf).withColumn("label", testDf.col("label").cast(DataTypes.DoubleType));
+
+
+        Dataset<Row> testPredictionsRDD = testPredictions.select(col("prediction"), col("label"));
+        BinaryClassificationMetrics testMetrics = new BinaryClassificationMetrics(testPredictionsRDD);
+
+        System.out.format("Test PR and ROC : %f, %f\n", testMetrics.areaUnderPR(), testMetrics.areaUnderROC()) ;
+
+
+        MulticlassMetrics testMulticlassMetrics
+                = new MulticlassMetrics(testPredictionsRDD);
+
+// Confusion matrix
+
+        System.out.println("Confusion Matrix");
+        System.out.println(testMulticlassMetrics.confusionMatrix());
+        System.out.format("Precision: %f, %f\n",testMulticlassMetrics.precision(0), testMulticlassMetrics.precision(1));
+        System.out.format("Recall: %f, %f\n",testMulticlassMetrics.recall(0), testMulticlassMetrics.recall(1));
+
+
+
+
+
 
     }
+
+
 }
