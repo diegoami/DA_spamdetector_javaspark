@@ -1,0 +1,17 @@
+Test PR and ROC : 0.878212, 0.902439
+Confusion Matrix
+931.0  5.0    
+26.0   111.0  
+Precision: 0.972832, 0.956897
+Recall: 0.994658, 0.810219
+Overall PR and ROC : 0.978163, 0.982079
+Confusion Matrix
+4820.0  5.0    
+26.0    721.0  
+Precision: 0.993113, 0.994635
+Recall: 0.965194, 0.998964
+[message: string, words: array<string> ... 4 more fields]
+(Winner! You have won a car) --> prob=[0.9909522955680209,0.009047704431979022], prediction=0.0
+(I feel bad today) --> prob=[0.9999501870238057,4.981297619425775E-5], prediction=0.0
+(Please call our customer service representative) --> prob=[0.850934006452143,0.14906599354785702], prediction=0.0
+(Your free ringtone is waiting to be collected. Simply text the password) --> prob=[0.05470387338164174,0.9452961266183582], prediction=1.0
